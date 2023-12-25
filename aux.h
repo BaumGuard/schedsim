@@ -61,21 +61,32 @@ void responseTime () {
 
 // Medium waiting time
 void waitingTime () {
-
-    int waitingTimeArr[procQuant+1];
+    int waitingTimeArr[procQuant];
 
     for (int a=0; a<procQuant; a++) {
+        int endIndex = 0;
+
+        for (int b=totalExecTime; b>0; b--) {
+            if (execArray[a][b] == 1) {
+                endIndex = b;
+                break;
+            }
+        }
+
         int waitingTime = 0;
 
-        for (int b=1; b<=totalExecTime; b++) {
-            if (execArray[a][b] == 0)
+        for (int b=0; b<=endIndex; b++) {
+            if (execArray[a][b] == 0) {
                 waitingTime++;
+            }
         }
+
         waitingTimeArr[a] = waitingTime;
-        printf("P%d - Response time: %d\n", execArray[a][0], waitingTime);
+
+        printf("P%d - Wartezeit: %d\n", execArray[a][0], waitingTime);
     }
 
-    printf("Medium response time: %.2f\n", avgTime(waitingTimeArr, procQuant));
+    printf("Mittlere Wartezeit: %.2f\n", avgTime(waitingTimeArr, procQuant));
 }
 
 
