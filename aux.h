@@ -122,52 +122,6 @@ bool containsProcess (std::vector<Process>& procs, int procNumber) {
 }
 
 
-// Determine the process with the lowest execution time
-int getMinExecTimeProc (std::vector<Process> procs) {
-    int minExecTime = procs[0].getExecTime();
-    int minProc = procs[0].getProcessNumber();
-
-    for (int i=1; i<procs.size(); i++){
-        if (procs[i].getExecTime() < minExecTime) {
-            minExecTime = procs[i].getExecTime();
-            minProc = procs[i].getProcessNumber();
-        }
-    }
-
-    return minProc;
-}
-
-// Determine the process with the lowest laxity
-int getMinLaxityProc (std::vector<Process> procs) {
-    int minLaxity = procs[0].getLaxity();
-    int minProc = procs[0].getProcessNumber();
-
-    for (int i=1; i<procs.size(); i++){
-        if (procs[i].getLaxity() < minLaxity) {
-            minLaxity = procs[i].getLaxity();
-            minProc = procs[i].getProcessNumber();
-        }
-    }
-
-    return minProc;
-}
-
-// Determine process with the earliest deadline
-int getMinDeadlineProc (std::vector<Process> procs) {
-    int minDeadline = procs[0].getDeadline();
-    int minProc = procs[0].getProcessNumber();
-
-    for (int i=1; i<procs.size(); i++){
-        if (procs[i].getDeadline() < minDeadline) {
-            minDeadline = procs[i].getDeadline();
-            minProc = procs[i].getProcessNumber();
-        }
-    }
-
-    return minProc;
-}
-
-
 // Determine the process index within a process list
 int getIndexByProcNumber (std::vector<Process>& procs, int procNumber) {
     int pn = -1;
