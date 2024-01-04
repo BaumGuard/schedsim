@@ -23,7 +23,12 @@ int main (int argc, char* argv[]) {
             std::vector<std::string> vec = split(currentLine);
 
             // Creating the processes
-            pl.push_back(Process(std::stoi(vec[0]),std::stoi(vec[1]),std::stoi(vec[2]),std::stoi(vec[3])));
+            if (vec.size() == 4)
+                pl.push_back(Process(std::stoi(vec[0]),std::stoi(vec[1]),std::stoi(vec[2]),std::stoi(vec[3])));
+            else if (vec.size() == 3)
+                pl.push_back(Process(std::stoi(vec[0]),std::stoi(vec[1]),std::stoi(vec[2])));
+            else
+                throw std::logic_error("Process data incorrect");
         }
 
 
@@ -47,6 +52,9 @@ int main (int argc, char* argv[]) {
                     throw std::logic_error("No quantum supplied for Round Robin");
             }
 
+            else
+                throw std::logic_error("No such paramter");
+
             printf("\n");
             printProcs();
             printf("\n");
@@ -63,8 +71,7 @@ int main (int argc, char* argv[]) {
 
     // If no file and scheduling algorithm have been entered, show the help display
     else
-        printf("\e[1;34mschedsim - help file\e[0m\n\n\e[1;34mSyntax\e[0m\nschedsim <File> <Scheduling algorithm> [<Quantum>]\n\n\e[1;34mAvailable scheduling algorithms\e[0m\n\t-sjf\t\tShortest Job First\n\t-edf\t\tEarliest Deadline First\n\t-llf\t\tLowest Laxity First\n\t-fcfs\t\tFirst Come First Serve\n\t-rr <Quantum>\tRound Robin with time slice\n\n");
-
+        printf("\e[1;34mschedsim - Help file\e[0m\n\n\e[1;34mSyntax\e[0m\nschedsim <Datei> <Scheduling-Algorithmus> [<Quantum>]\n\n\e[1;34mVerfügbare Scheduling-Algorithmen\e[0m\n\t-sjf\t\tShortest Job First - Preemptive\n\t-sjf_np\t\tShortest Job First - Non-preemptive\n\t-edf\t\tEarliest Deadline First\n\t-llf\t\tLowest Laxity First\n\t-fcfs\t\tFirst Come First Serve\n\t-rr <Quantum>\tRound Robin mit Zeitscheibe\n\n\e[1;34mDateiformat\e[0m\n<Process number> <Ready time> <Execution time> <Deadline>\n\n");
 
     freeProcArray();
 }
