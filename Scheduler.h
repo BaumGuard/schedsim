@@ -1,6 +1,6 @@
 /*********************************************
  * Implementation of the scheduling algorithms
- * - Shortest Job First (SJF)
+ * - Shortest Job First (SJF) - Preemptive and non preemptive
  * - Least Laxity First (LLF)
  * - Earliest Deadline First (EDF)
  * - First Come First Serve (FCFS)
@@ -11,6 +11,7 @@
 #include<vector>
 #include "sorting.h"
 #include "aux.h"
+#include "MinProc.h"
 
 std::vector<Process> tmpProcs;
 
@@ -25,7 +26,7 @@ void SJF (std::vector<Process> p) {
 
     int clock = 0; // Time slice clock
 
-    printf("\x1B[1mShortest Job First (SJF)\x1B[0m\n");
+    printf("\x1B[1mShortest Job First (SJF) - Preemptive\x1B[0m\n");
 
     // While the process list still contains elements
     while (!p.empty()) {
@@ -39,19 +40,77 @@ void SJF (std::vector<Process> p) {
             }
         }
 
-        int minProc = getMinExecTimeProc(readyProcs); // Determine process with the shortest execution time
+        if (!readyProcs.empty()) {
+            int minProc = getMinExecTimeProc(readyProcs); // Determine process with the shortest execution time
+    
+            int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the shortest execution
+    
+            p[indexOfMinProc] -= 1; // Decrementing the execution time of the executed process (See the operation overloading in the class Process)
+    
+            // If a process is being finished in the current time slice, delete it from the process list
+            if (p[indexOfMinProc].getExecTime() == 0) {
+                p.erase(p.begin()+indexOfMinProc);
+            }
+    
+            // Mark the execution for the process at the current clock
+            markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
 
-        int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the shortest execution
-
-        p[indexOfMinProc] -= 1; // Decrementing the execution time of the executed process (See the operation overloading in the class Process)
-
-        // If a process is being finished in the current time slice, delete it from the process list
-        if (p[indexOfMinProc].getExecTime() == 0) {
-            p.erase(p.begin()+indexOfMinProc);
         }
 
-        // Mark the execution for the process at the current clock
-        markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+        clock++; // Increment clock
+    }
+
+}
+
+
+void SJF (std::vector<Process> p) {
+
+    tmpProcs = p;
+
+    // List of all currently ready processes
+    std::vector<Process> readyProcs;
+
+    int clock = 0; // Time slice clock
+    int lastProc = -1; // Saves the process number of the lastly executed process
+
+    printf("\x1B[1mShortest Job First (SJF) - Non-preemptive\x1B[0m\n");
+
+    // While the process list still contains elements
+    while (!p.empty()) {
+        readyProcs.clear(); // Emptying the list before filling it
+
+        // Creating the list of the currently ready processes
+        // If a process appears before or at the current clock, add it to the list
+        for (int i=0; i<p.size(); i++) {
+            if (p[i].getReadyTime() <= clock) {
+                readyProcs.push_back(p[i]);
+            }
+        }
+
+        int minProc;
+
+        if (!readyProcs.empty()) {
+            // If the lastly executed process hasn't finished
+            if (containsProcess(readyProcs, lastProc))
+                minProc = lastProc; // Execute the lastly executed process once again
+            else
+                minProc = getMinExecTimeProc(readyProcs); // Get process with shortest execution time
+
+            lastProc = minProc; // Save the current executed process for the next run
+
+            int indexOfMinProc = getIndexByProcNumber(p, minProc); // Get index of the process with the shortest execution time within the process list
+
+            p[indexOfMinProc] -= 1; // Decrementing the execution time of the executed process by 1 (see operator overloading in the class Process)
+
+            // If the process finishes in the current time slice (Execution time becomes 0)
+            // delete it from the process list
+            if (p[indexOfMinProc].getExecTime() == 0) {
+                p.erase(p.begin()+indexOfMinProc);
+            }
+
+            // Mark the time slice of the current process as executed
+            markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+        }
 
         clock++; // Increment clock
     }
@@ -79,17 +138,24 @@ void EDF (std::vector<Process> p) {
             }
         }
 
-        int minProc = getMinDeadlineProc(readyProcs); // Determine the process with the earliest deadline
+        if (!readyProcs.empty()) {
+            int minProc = getMinDeadlineProc(readyProcs); // Determine the process with the earliest deadline
+    
+            int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the earliest deadline
+    
+            p[indexOfMinProc] -= 1;
 
-        int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the earliest deadline
-
-        p[indexOfMinProc] -= 1;
-
-        if (p[indexOfMinProc].getExecTime() == 0) {
-            p.erase(p.begin()+indexOfMinProc);
+            // If the deadline minus the current clock becomes less than 0, the deadline couldn't be obeyed.
+            if (p[indexOfMinProc].getDeadline() - clock > 0)
+                    markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+                else
+                    markExecution(getIndexByProcNumber(tmpProcs, minProc), clock, 2);
+    
+    
+                if (p[indexOfMinProc].getExecTime() == 0) {
+                    p.erase(p.begin()+indexOfMinProc);
+                }
         }
-
-        markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
 
         clock++;
     }
@@ -117,18 +183,24 @@ void LLF (std::vector<Process> p) {
             }
         }
 
-        int minProc = getMinLaxityProc(readyProcs); // Determine the process with the least laxity
+        if (!readyProcs.empty()) {
+            int minProc = getMinLaxityProc(readyProcs); // Determine the process with the least laxity
+    
+            int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the least laxity
+    
+            p[indexOfMinProc] -= 1;
 
-        int indexOfMinProc = getIndexByProcNumber(p, minProc); // Determine the index of the process with the least laxity
-
-        p[indexOfMinProc] -= 1;
-
-        if (p[indexOfMinProc].getExecTime() == 0) {
-            p.erase(p.begin()+indexOfMinProc);
-        }
-
-
-        markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+            // If the laxity becomes less than 0, the deadline couldn't be obeyed
+            if (p[indexOfMinProc].getLaxity() >= 0)
+                    markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+                else
+                    markExecution(getIndexByProcNumber(tmpProcs, minProc), clock, 2);
+    
+    
+                if (p[indexOfMinProc].getExecTime() == 0) {
+                    p.erase(p.begin()+indexOfMinProc);
+                }
+            }
 
         clock++;
     }
@@ -137,23 +209,39 @@ void LLF (std::vector<Process> p) {
 
 // First Come First Serve
 void FCFS (std::vector<Process> p) {
-
-    int responseTime = 0;
+    std::vector<Process> readyProcs;
 
     tmpProcs = p;
 
-    // Sort the processes according to their ready times
-    sortProcesses(p, byReadyTime);
+    int clock = 0;
 
-    printf("\x1B[1mFirst Come First Serve (FCFS)\x1B[0m\n");
+    printf("\x1B[1mFirst Come First Serve\x1B[0m\n");
 
-    // Iteration over the process list
-    for (int a=0; a<p.size(); a++) {
+    while (!p.empty()) {
+        readyProcs.clear();
 
-        for (int b=responseTime; b<responseTime+p[a].getExecTime(); b++)
-            markExecution(getIndexByProcNumber(tmpProcs,p[a].getProcessNumber()), b);
+        for (int i=0; i<p.size(); i++) {
+            if (p[i].getReadyTime() <= clock) {
+                readyProcs.push_back(p[i]);
+            }
+        }
 
-        responseTime += p[a].getExecTime(); // Adding the execution time of the finished process to the response time (Gives the response time of the finished process)
+        if (!readyProcs.empty()) {
+            int minProc = getMinReadyTimeProc(readyProcs); // Get process with least ready time
+
+            int indexOfMinProc = getIndexByProcNumber(p, minProc); // Get process with least ready time within the process list
+            p[indexOfMinProc] -= 1;
+
+            markExecution(getIndexByProcNumber(tmpProcs, minProc), clock);
+
+
+            if (p[indexOfMinProc].getExecTime() == 0) {
+                p.erase(p.begin()+indexOfMinProc);
+            }
+        }
+
+        clock++;
+
 
     }
 }
@@ -185,6 +273,9 @@ void RoundRobin (std::vector<Process> p, int quant) {
             }
         }
 
+        
+        if (!readyProcs.empty()) {
+
         // Iteration over the list of the ready processes
         for (int i=0; i<readyProcs.size(); i++) {
 
@@ -208,6 +299,14 @@ void RoundRobin (std::vector<Process> p, int quant) {
 
         }
         wait += quant; // Increasing the clock for queueing processes
+
+        }
+
+        else {
+            clock += quant;
+            wait += quant;
+        }
+        
 
     }
 }
