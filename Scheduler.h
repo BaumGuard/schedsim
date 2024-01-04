@@ -63,7 +63,7 @@ void SJF (std::vector<Process> p) {
 }
 
 
-void SJF (std::vector<Process> p) {
+void SJF_np (std::vector<Process> p) {
 
     tmpProcs = p;
 
