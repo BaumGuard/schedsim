@@ -15,6 +15,14 @@
 
 std::vector<Process> tmpProcs;
 
+// Create the list of currently ready processes
+void getReadyProcs(std::vector<Process>& proclist, std::vector<Process>& readyProcs, int clock) {
+    for (int i=0; i<proclist.size(); i++) {
+            if (proclist[i].getReadyTime() <= clock) {
+                readyProcs.push_back(proclist[i]);
+            }
+        }
+}
 
 // Shortest Job First
 void SJF (std::vector<Process> p) {
@@ -34,11 +42,7 @@ void SJF (std::vector<Process> p) {
 
         // Creating the list of the currently ready processes
         // If a process appears before or at the current clock, add it to the list
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= clock) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         if (!readyProcs.empty()) {
             int minProc = getMinExecTimeProc(readyProcs); // Determine process with the shortest execution time
@@ -81,11 +85,7 @@ void SJF_np (std::vector<Process> p) {
 
         // Creating the list of the currently ready processes
         // If a process appears before or at the current clock, add it to the list
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= clock) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         int minProc;
 
@@ -132,11 +132,7 @@ void EDF (std::vector<Process> p) {
     while (!p.empty()) {
         readyProcs.clear();
 
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= clock) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         if (!readyProcs.empty()) {
             int minProc = getMinDeadlineProc(readyProcs); // Determine the process with the earliest deadline
@@ -177,11 +173,7 @@ void LLF (std::vector<Process> p) {
     while (!p.empty()) {
         readyProcs.clear();
 
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= clock) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         if (!readyProcs.empty()) {
             int minProc = getMinLaxityProc(readyProcs); // Determine the process with the least laxity
@@ -220,11 +212,7 @@ void FCFS (std::vector<Process> p) {
     while (!p.empty()) {
         readyProcs.clear();
 
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= clock) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         if (!readyProcs.empty()) {
             int minProc = getMinReadyTimeProc(readyProcs); // Get process with least ready time
@@ -267,11 +255,7 @@ void RoundRobin (std::vector<Process> p, int quant) {
         sortProcesses(p, byReadyTime);
 
         // Generate the list of the currently ready processes
-        for (int i=0; i<p.size(); i++) {
-            if (p[i].getReadyTime() <= wait) {
-                readyProcs.push_back(p[i]);
-            }
-        }
+        getReadyProcs(p, readyProcs, clock);
 
         
         if (!readyProcs.empty()) {
