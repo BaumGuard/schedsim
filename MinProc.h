@@ -33,6 +33,21 @@ int getMinExecTimeProc (std::vector<Process> procs) {
     return minProc;
 }
 
+// Get process with longest execution time
+int getMaxExecTimeProc (std::vector<Process> procs) {
+    int maxExecTime = procs[0].getExecTime();
+    int maxProc = procs[0].getProcessNumber();
+
+    for (int i=1; i<procs.size(); i++){
+        if (procs[i].getExecTime() < maxExecTime) {
+            maxExecTime = procs[i].getExecTime();
+            maxProc = procs[i].getProcessNumber();
+        }
+    }
+
+    return maxProc;
+}
+
 // Get process with least laxity
 int getMinLaxityProc (std::vector<Process> procs) {
     int minLaxity = procs[0].getLaxity();
