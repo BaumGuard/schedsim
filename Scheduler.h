@@ -118,6 +118,49 @@ void SJF_np (std::vector<Process> p) {
 }
 
 
+// Longest Job First
+void LJF (std::vector<Process> p) {
+
+    tmpProcs = p;
+
+    // List of all currently ready processes
+    std::vector<Process> readyProcs;
+
+    int clock = 0; // Time slice clock
+
+    printf("\x1B[1mLongest Job First (SJF) - Preemptive\x1B[0m\n");
+
+    // While the process list still contains elements
+    while (!p.empty()) {
+        readyProcs.clear(); // Emptying the list before filling it
+
+        // Creating the list of the currently ready processes
+        // If a process appears before or at the current clock, add it to the list
+        getReadyProcs(p, readyProcs, clock);
+
+        if (!readyProcs.empty()) {
+            int maxProc = getMaxExecTimeProc(readyProcs); // Determine process with the longest execution time
+    
+            int indexOfMaxProc = getIndexByProcNumber(p, maxProc); // Determine the index of the process with the longest execution
+    
+            p[indexOfMaxProc] -= 1; // Decrementing the execution time of the executed process (See the operation overloading in the class Process)
+    
+            // If a process is being finished in the current time slice, delete it from the process list
+            if (p[indexOfMaxProc].getExecTime() == 0) {
+                p.erase(p.begin()+indexOfMaxProc);
+            }
+    
+            // Mark the execution for the process at the current clock
+            markExecution(getIndexByProcNumber(tmpProcs, maxProc), clock);
+
+        }
+
+        clock++; // Increment clock
+    }
+
+}
+
+
 // Earliest Deadline First
 // The approach is similar to SJF except for the following comments.
 void EDF (std::vector<Process> p) {
