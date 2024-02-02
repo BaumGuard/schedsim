@@ -39,7 +39,7 @@ int getMaxExecTimeProc (std::vector<Process> procs) {
     int maxProc = procs[0].getProcessNumber();
 
     for (int i=1; i<procs.size(); i++){
-        if (procs[i].getExecTime() < maxExecTime) {
+        if (procs[i].getExecTime() > maxExecTime) {
             maxExecTime = procs[i].getExecTime();
             maxProc = procs[i].getProcessNumber();
         }
