@@ -7,6 +7,7 @@ Currently it only supports one CPU.
 
 ### Available scheduling algorithms
 - Shortest Job First (SJF)
+- Longest Job First (LJF)
 - Earliest Deadline First (EDF)
 - Least Laxity First (LLF)
 - First Come First Serve (FCFS)
@@ -32,6 +33,8 @@ make
 Option | Meaning
 -|-
 `-sjf` | Shortest Job First
+`-sjf_np` | Shortest Job First (non-preemptive)
+`-ljf` | Longest Job First
 `-edf` | Earliest Deadline First
 `-llf`  | Least Laxity First
 `-fcfs` | First Come First Serve
