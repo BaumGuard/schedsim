@@ -39,6 +39,10 @@ int main (int argc, char* argv[]) {
 
             if (strcmp(argv[2],"-sjf")==0)
                 SJF(pl);
+            else if (strcmp(argv[2], "-sjf_np")==0)
+                SJF_np(pl);
+            else if (strcmp(argv[2], "-ljf")==0)
+                LJF(pl);
             else if (strcmp(argv[2], "-edf")==0)
                 EDF(pl);
             else if (strcmp(argv[2], "-fcfs")==0)
