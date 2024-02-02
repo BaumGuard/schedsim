@@ -75,7 +75,7 @@ int main (int argc, char* argv[]) {
 
     // If no file and scheduling algorithm have been entered, show the help display
     else
-        printf("\e[1;34mschedsim - Help file\e[0m\n\n\e[1;34mSyntax\e[0m\nschedsim <File> <Scheduling algorithm> [<Quantum>]\n\n\e[1;34mAvailable scheduling algorithms\e[0m\n\t-sjf\t\tShortest Job First - Preemptive\n\t-sjf_np\t\tShortest Job First - Non-preemptive\n\t-edf\t\tEarliest Deadline First\n\t-llf\t\tLowest Laxity First\n\t-fcfs\t\tFirst Come First Serve\n\t-rr <Quantum>\tRound Robin with quantum\n\n\e[1;34mFile format\e[0m\n<Process number> <Ready time> <Execution time> <Deadline>\n\n");
+        printf("\e[1;34mschedsim - Help file\e[0m\n\n\e[1;34mSyntax\e[0m\nschedsim <File> <Scheduling algorithm> [<Quantum>]\n\n\e[1;34mAvailable scheduling algorithms\e[0m\n\t-sjf\t\tShortest Job First - Preemptive\n\t-sjf_np\t\tShortest Job First - Non-preemptive\n\t-ljf\t\tLongest Job First\n\t-edf\t\tEarliest Deadline First\n\t-llf\t\tLowest Laxity First\n\t-fcfs\t\tFirst Come First Serve\n\t-rr <Quantum>\tRound Robin with quantum\n\n\e[1;34mFile format\e[0m\n<Process number> <Ready time> <Execution time> <Deadline>\n\n");
 
     freeProcArray();
 }
